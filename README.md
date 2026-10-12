@@ -3,7 +3,7 @@
 [![CI](https://github.com/Wang-13137/maldi-ms-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/Wang-13137/maldi-ms-pipeline/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23311993.svg)](https://doi.org/10.5281/zenodo.23311993)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23311992.svg)](https://doi.org/10.5281/zenodo.23311992)
 
 MALDI-TOF 质谱代谢组学分析流水线：从原始谱图到可用的诊断特征面板。
 代码由一份跑了半年的分析脚本整理而来，把散落的常量、重复的逻辑和一次性
@@ -387,8 +387,14 @@ python -m pytest tests/ -q
 
 ## 9. 引用
 
-本仓库的软件版本已存档于 Zenodo，带永久 DOI。引用时请使用**具体版本 DOI**，
-这样审稿人打开的就是与你论文结果对应的那份代码快照。
+本仓库的软件版本已存档于 Zenodo，带永久 DOI。Zenodo 给了两个 DOI，用途不同：
+
+| DOI | 号码 | 用在哪 |
+|---|---|---|
+| 版本 DOI | `10.5281/zenodo.23311993` | **论文参考文献**，永久指向 v0.1.0 快照 |
+| 概念 DOI | `10.5281/zenodo.23311992` | 顶部徽章，永远指向最新版本 |
+
+引用时请使用**具体版本 DOI**，这样审稿人打开的就是与你论文结果对应的那份代码快照。
 
 学位论文（中文）：
 
