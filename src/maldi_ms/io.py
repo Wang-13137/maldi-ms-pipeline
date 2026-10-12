@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import os
 import re
+import sys
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
@@ -81,6 +82,7 @@ def read_directory(data_dir: str, cfg: dict) -> Dataset:
     )
 
     dataset = Dataset()
+    skipped: List[str] = []
     for fname in files:
         fpath = os.path.join(data_dir, fname)
         df = pd.read_excel(fpath)
@@ -100,6 +102,7 @@ def read_directory(data_dir: str, cfg: dict) -> Dataset:
 
             m = regex.search(col_str)
             if not m:
+                skipped.append(f"{fname}: {col_str}")
                 continue
             uti_num = int(m.group(1))
             sample_name = f"UTI{uti_num}"
@@ -108,6 +111,14 @@ def read_directory(data_dir: str, cfg: dict) -> Dataset:
                 name=sample_name, mz=mz.copy(), intensity=intensity,
                 group=group, source_file=fname,
             )
+
+    if skipped:
+        print(
+            f"[警告] {len(skipped)} 个列名无法解析出样本编号，已跳过：\n  "
+            + "\n  ".join(skipped[:10])
+            + ("\n  ..." if len(skipped) > 10 else ""),
+            file=sys.stderr,
+        )
 
     return dataset
 

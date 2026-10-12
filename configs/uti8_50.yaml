@@ -93,7 +93,3 @@ modeling:
     log2_fc: 0.585      # log2(1.5)
     fdr_p_value: 0.05
     fdr_log2_fc: 0.263  # log2(1.2)
-
-output:
-  save_plots: true
-  dpi: 200

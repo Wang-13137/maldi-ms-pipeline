@@ -7,7 +7,7 @@ name = "maldi-ms-pipeline"
 version = "0.1.0"
 description = "MALDI-TOF 代谢组学分析流水线：峰检测、跨样本对齐、特征过滤与机器学习诊断建模"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "王柘童" }]
 dependencies = [
@@ -20,7 +20,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-plot = ["matplotlib>=3.6"]
 dev = ["pytest>=7.0"]
 
 [project.scripts]

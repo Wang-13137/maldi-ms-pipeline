@@ -1,22 +1,49 @@
 """快速上手：读谱图、检峰、对齐、过滤、建模，五步跑完。
 
-    PYTHONPATH=src python examples/quickstart.py <数据目录>
+    python examples/quickstart.py              # 无参数：自动生成合成谱图演示
+    python examples/quickstart.py <数据目录>    # 用真实数据（格式见 README）
 
-数据格式见 README「输入数据格式」。
+合成演示生成 6 例样本（感染 2 / 健康 4），含 3 个共有峰和 1 个只在
+感染组出现的差异峰，全程不依赖任何外部数据。
 """
 
 import os
 import sys
+import tempfile
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
 
 from maldi_ms import alignment, filtering, modeling  # noqa: E402
 from maldi_ms.io import load_config, read_directory  # noqa: E402
 from maldi_ms.peak_detection import pick_peaks  # noqa: E402
 
 CONFIG = os.path.join(os.path.dirname(__file__), "..", "configs", "uti8_50.yaml")
+
+DEMO_SAMPLES = ["UTI11", "UTI13", "UTI20", "UTI21", "UTI22", "UTI23"]
+DEMO_INFECTED = {"UTI11", "UTI13"}  # 与 configs/uti8_50.yaml 的 infection_uti 一致
+
+
+def make_demo_dataset(data_dir: str, seed: int = 7) -> None:
+    """生成 6 例合成谱图并写成 xlsx，感染组额外带一个差异峰。"""
+    rng = np.random.default_rng(seed)
+    mz = np.arange(100.0, 200.0, 0.02)
+    shared = [(120.0, 4000.0), (150.0, 3000.0), (180.0, 2000.0)]
+
+    os.makedirs(data_dir, exist_ok=True)
+    df = pd.DataFrame({"横坐标(m/z)": mz})
+    for i, name in enumerate(DEMO_SAMPLES):
+        peaks = list(shared)
+        if name in DEMO_INFECTED:
+            peaks.append((160.0, 2500.0))
+        y = rng.normal(0.0, 3.0, mz.size)
+        for center, amplitude in peaks:
+            y = y + amplitude * np.exp(-0.5 * ((mz - center) / 0.06) ** 2)
+        df[f"样品{i + 1}_{name}"] = y
+
+    df.to_excel(os.path.join(data_dir, "synthetic_demo.xlsx"), index=False)
 
 
 def main(data_dir: str) -> None:
@@ -58,7 +85,10 @@ def main(data_dir: str) -> None:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print(__doc__)
-        sys.exit(1)
-    main(sys.argv[1])
+    if len(sys.argv) > 1:
+        main(sys.argv[1])
+    else:
+        demo_dir = os.path.join(tempfile.mkdtemp(prefix="maldi_demo_"), "data")
+        print("未提供数据目录，演示模式：生成 6 例合成谱图（感染 2 / 健康 4）\n")
+        make_demo_dataset(demo_dir)
+        main(demo_dir)

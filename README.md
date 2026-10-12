@@ -1,5 +1,9 @@
 # maldi-ms-pipeline
 
+[![CI](https://github.com/Wang-13137/maldi-ms-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/Wang-13137/maldi-ms-pipeline/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 MALDI-TOF 质谱代谢组学分析流水线：从原始谱图到可用的诊断特征面板。
 代码由一份跑了半年的分析脚本整理而来，把散落的常量、重复的逻辑和一次性
 的绘图代码拆成可配置、可测试的模块。
@@ -170,30 +174,56 @@ MALDI 基质（CHCA、DHB）本身在低质量区产生大量峰，塑料耗材�
 ```bash
 python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
-pip install -e ".[plot,dev]"
+pip install -e ".[dev]"
 ```
 
-依赖：numpy、pandas、scipy、scikit-learn、pyyaml、openpyxl；
-绘图需要 matplotlib，测试需要 pytest。
+依赖：numpy、pandas、scipy、scikit-learn、pyyaml、openpyxl；测试需要 pytest。
 
 ---
 
 ## 4. 快速上手
 
+### 没有数据？先用合成数据体验
+
+原始数据是未公开的临床样本（原因见下面「数据说明」）。clone 之后不需要
+任何数据，就可以先验证仓库能跑、算法逻辑正确：
+
+```bash
+pip install -e ".[dev]"
+
+# 方式一：测试套件（16 个用例，含合成数据的端到端冒烟）
+python -m pytest tests/ -q
+
+# 方式二：合成谱图演示全流程（自动生成 6 例合成样本，含一个只在感染组出现的差异峰）
+python examples/quickstart.py
+```
+
+### 数据说明
+
+本仓库**不包含原始谱图数据**。数据是一组真实临床尿液样本（37 例 + 3 个
+阴性对照），来自医院合作项目，样本信息未获授权公开。因此第 5 节的数字
+无法在 clone 后直接复现，其可信度由两件事支撑：测试套件验证算法逻辑，
+输出与原始脚本逐格比对（最大绝对差 0）。
+
+如果你有同格式的数据（Excel 文件，第一列为 m/z 轴、其余每列一条谱图，
+列名含 `UTI<n>` 编号），换上即可运行。
+
+### 用真实数据运行
+
 一键跑通全流程：
 
 ```bash
 python -m maldi_ms.cli --config configs/uti8_50.yaml \
-    --data "C:/Users/Jenny/Desktop/UTI/8-50" \
+    --data <你的数据目录> \
     --out outputs/uti8_50
 ```
 
-在 Windows 上建议带上环境变量，避免中文输出编码和绘图后端问题：
+在 Windows 上建议带上环境变量，避免中文输出编码问题：
 
 ```bash
-PYTHONIOENCODING=utf-8 MPLBACKEND=Agg python -m maldi_ms.cli \
+PYTHONIOENCODING=utf-8 python -m maldi_ms.cli \
     --config configs/uti8_50.yaml \
-    --data "C:/Users/Jenny/Desktop/UTI/8-50" \
+    --data <你的数据目录> \
     --out outputs/uti8_50
 ```
 
@@ -205,7 +235,7 @@ from maldi_ms.io import load_config, read_directory
 from maldi_ms.peak_detection import pick_peaks
 
 cfg = load_config("configs/uti8_50.yaml")
-dataset = read_directory("C:/Users/Jenny/Desktop/UTI/8-50", cfg)
+dataset = read_directory("<你的数据目录>", cfg)
 
 names = sorted(dataset.samples)
 peaks = {n: pick_peaks(dataset.samples[n].mz, dataset.samples[n].intensity, cfg)[0]
@@ -215,7 +245,7 @@ peaks = {n: pick_peaks(dataset.samples[n].mz, dataset.samples[n].intensity, cfg)
 更完整的示例见 `examples/quickstart.py`：
 
 ```bash
-PYTHONPATH=src python examples/quickstart.py "C:/Users/Jenny/Desktop/UTI/8-50"
+python examples/quickstart.py <你的数据目录>
 ```
 
 ### 输入数据格式
@@ -304,6 +334,13 @@ m/z 212.92 是什么分子，需要 MS/MS 或者标品比对才能确定。在�
 上机批次），每个批次各带 1 个阴性对照。阴性对照过滤能去掉基质峰，但
 仪器状态漂移带来的系统性强度差异没有专门的校正方法。
 
+**8. RF 特征选择在全量数据上完成，panel AUC 存在乐观偏差。** 第 2.11 节的
+评估流程是：先用全部 37 例样本拟合随机森林、得到特征重要性排序，再按排序
+取 Top-N 做 5 折 CV。特征选择阶段已经"看过"测试折里的样本，这是一处
+信息泄漏——0.9167 应当读作偏乐观的估计。无泄漏的做法是嵌套交叉验证
+（特征选择在每一折的训练集内部完成），这是本仓库最明确的后续改进方向。
+之所以保持现状：它与原始分析脚本的流程一致，仓库的定位是忠实复现。
+
 ---
 
 ## 7. 项目结构
@@ -314,6 +351,7 @@ maldi-ms-pipeline/
 ├── pyproject.toml
 ├── .gitignore
 ├── configs/uti8_50.yaml        # 全部可调参数，代码里没有魔法数字
+├── .github/workflows/ci.yml    # CI：多 Python 版本跑测试
 ├── src/maldi_ms/
 │   ├── __init__.py
 │   ├── io.py                   # 谱图读取、样本分组、配置加载

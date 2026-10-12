@@ -78,9 +78,9 @@ def filter_background(
 
     if verbose:
         n_blank_detected = int(np.sum(blank_intensities > 0))
-        print(f"  总feature: {len(mzs)}")
-        print(f"  阴性对照中检测到: {n_blank_detected}")
-        print(f"  阴性对照中未检测到(直接保留): {len(mzs) - n_blank_detected}")
+        print(f"  特征总数: {len(mzs)}")
+        print(f"  阴性对照中检出: {n_blank_detected}")
+        print(f"  阴性对照中未检出（直接保留）: {len(mzs) - n_blank_detected}")
         print(f"  标记为背景: {n_bg}")
         print(f"  保留: {len(keep)}")
 
