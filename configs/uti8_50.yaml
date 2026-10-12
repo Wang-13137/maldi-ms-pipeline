@@ -1,0 +1,99 @@
+# UTI 8-50 数据集默认配置
+# 所有可调参数集中在这里，源码中不出现魔法数字。
+#
+# 默认值与已发表结果对应：47 个有效特征 / SVM 5 折 CV AUC = 0.9167。
+# 修改 snr_threshold、min_intensity、ppm_tolerance、min_detection_ratio
+# 都会改变最终特征数与 AUC，见 README「已知局限」。
+
+dataset:
+  # 阳性（感染组）样本编号。其余 UTI 样本归为健康组。
+  infection_uti: [11, 13, 17, 18, 19, 33, 42, 44]
+  # 样本列名的正则，用于从 "样品2_UTI11" 中提取编号
+  sample_pattern: "UTI(\\d+)"
+  # 阴性对照列的识别关键字
+  negative_keywords: ["阴性对照"]
+  negative_suffixes: ["_CN", "__CN"]
+
+preprocessing:
+  # Savitzky-Golay 平滑窗口（数据点数）。211407 点上约合 0.06 Da。
+  sg_window: 41
+  sg_polyorder: 2
+  # 是否做基线校正。MALDI 谱基线漂移小，默认关闭。
+  baseline_correction: false
+  # 归一化方式：none | tic（总离子流）
+  normalization: none
+
+peak_detection:
+  # 信噪比阈值。Bruker flexAnalysis 默认值。
+  snr_threshold: 3
+  # 相邻峰最小间隔（Da）。MALDI-TOF 分辨率 10000-20000 下的经验值。
+  min_peak_distance: 0.2
+  # 绝对强度下限（apex 高度）。0 表示不启用。
+  min_intensity: 600
+  # 峰宽下限（数据点数），用于剔除单点噪声尖峰
+  min_peak_width_pts: 3
+  # 相对强度下限，占基峰强度的比例
+  min_relative_intensity: 0.0001
+  # 质心相对顶点位移上限（Da），超过说明峰形不对称、多半是重叠峰
+  max_centroid_shift: 0.05
+  # 峰边界搜索：从顶点向外走，强度低于顶点此比例即停
+  boundary_fraction: 0.1
+  # 峰边界最大搜索半径（Da）
+  boundary_search_da: 0.05
+
+  isotope:
+    # 是否去除同位素峰
+    enabled: true
+    mass_shift: 1.003355
+    ppm_tolerance: 10
+    # 子峰/母峰强度比上限，超过则认为是独立峰而非同位素
+    max_ratio: 0.9
+    min_ratio: 0.01
+
+  # 肩峰合并（valley 判据）
+  shoulder:
+    enabled: true
+    max_gap_da: 0.15
+    valley_ratio: 0.5
+    intensity_ratio: 3.0
+
+alignment:
+  # 跨样本 m/z 归并容差（ppm）
+  ppm_tolerance: 100
+
+filtering:
+  # 检出率阈值：特征至少要在多少比例的样本中出现
+  min_detection_ratio: 0.15
+  # 绝对数量下限，样本少时兜底
+  min_detection_abs: 2
+  # 阴性对照背景过滤
+  background:
+    enabled: true
+    # 样本强度 / 对照强度 大于此值时直接保留
+    sample_dominant_ratio: 2.0
+    # 对照强度高于样本中位强度的此比例时判为背景
+    blank_intensity_ratio: 0.5
+
+modeling:
+  # 候选 panel 规模，逐个评估后取最优
+  panel_sizes: [3, 5, 10, 15, 20, 30, 50, 80]
+  # 交叉验证折数
+  cv_folds: 5
+  random_state: 42
+  rf:
+    n_estimators: 500
+    class_weight: balanced
+  svm:
+    kernel: rbf
+    probability: true
+    class_weight: balanced
+  # 差异检验的显著性阈值与倍数变化阈值
+  diff:
+    p_value: 0.05
+    log2_fc: 0.585      # log2(1.5)
+    fdr_p_value: 0.05
+    fdr_log2_fc: 0.263  # log2(1.2)
+
+output:
+  save_plots: true
+  dpi: 200

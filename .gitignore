@@ -1,0 +1,26 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 运行产物
+outputs/
+results/
+*.xlsx
+*.png
+*.pptx
+
+# 原始数据不放进仓库
+data/
+*.xls
+
+.idea/
+.vscode/
+.DS_Store
