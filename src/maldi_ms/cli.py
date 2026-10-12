@@ -3,7 +3,7 @@
 用法::
 
     python -m maldi_ms.cli --config configs/uti8_50.yaml \
-        --data "C:/Users/Jenny/Desktop/UTI/8-50" --out outputs/uti8_50
+        --data "path/to/your/spectra" --out outputs/uti8_50
 """
 
 from __future__ import annotations

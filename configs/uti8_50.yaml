@@ -85,7 +85,9 @@ modeling:
     class_weight: balanced
   svm:
     kernel: rbf
-    probability: true
+    # AUC 用 decision_function 计算，无需概率输出。置 true 时 sklearn 1.9+
+    # 会给出弃用警告（1.11 移除该参数），届时应改用 CalibratedClassifierCV
+    probability: false
     class_weight: balanced
   # 差异检验的显著性阈值与倍数变化阈值
   diff:

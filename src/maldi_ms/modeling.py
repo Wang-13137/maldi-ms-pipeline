@@ -137,12 +137,18 @@ def make_cv(cfg: dict, y: np.ndarray) -> StratifiedKFold:
 def _make_svm(cfg: dict) -> SVC:
     m = cfg.get("modeling", {})
     s = m.get("svm", {})
-    return SVC(
+    kwargs = dict(
         kernel=s.get("kernel", "rbf"),
-        probability=s.get("probability", True),
         class_weight=s.get("class_weight", "balanced"),
         random_state=m.get("random_state", 42),
     )
+    # roc_auc 走 decision_function，不需要概率输出。
+    # sklearn 1.9 起只要显式传入 probability（哪怕传 False）就会 FutureWarning，
+    # 1.11 移除该参数。因此默认不传；仅当配置显式要求概率输出时才传，
+    # 届时应改用 CalibratedClassifierCV(SVC(), ensemble=False)。
+    if s.get("probability", False):
+        kwargs["probability"] = True
+    return SVC(**kwargs)
 
 
 def random_forest_importance(X: np.ndarray, y: np.ndarray, cfg: dict) -> np.ndarray:
