@@ -16,6 +16,10 @@ abstract: >-
 license: MIT
 version: 0.1.0
 date-released: "2026-10-12"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.23311993"
+    description: "Zenodo 存档的软件版本 DOI（v0.1.0）"
 repository-code: "https://github.com/Wang-13137/maldi-ms-pipeline"
 url: "https://github.com/Wang-13137/maldi-ms-pipeline"
 keywords:

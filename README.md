@@ -3,6 +3,7 @@
 [![CI](https://github.com/Wang-13137/maldi-ms-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/Wang-13137/maldi-ms-pipeline/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23311993.svg)](https://doi.org/10.5281/zenodo.23311993)
 
 MALDI-TOF 质谱代谢组学分析流水线：从原始谱图到可用的诊断特征面板。
 代码由一份跑了半年的分析脚本整理而来，把散落的常量、重复的逻辑和一次性
@@ -384,6 +385,30 @@ python -m pytest tests/ -q
 - **端到端冒烟**：6 例合成样本跑通全流程，断言输出形状、文件齐全、
   指标自洽，不锁定具体数值。
 
-## 9. License
+## 9. 引用
+
+本仓库的软件版本已存档于 Zenodo，带永久 DOI。引用时请使用**具体版本 DOI**，
+这样审稿人打开的就是与你论文结果对应的那份代码快照。
+
+学位论文（中文）：
+
+> 王柘童. (2026). maldi-ms-pipeline (v0.1.0) [计算机软件]. Zenodo.
+> https://doi.org/10.5281/zenodo.23311993
+
+英文期刊：
+
+```bibtex
+@software{wang2026maldi,
+  author    = {Wang, Zhetong},
+  title     = {maldi-ms-pipeline: MALDI-TOF metabolomics analysis pipeline},
+  version   = {0.1.0},
+  year      = {2026},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.23311993},
+  url       = {https://github.com/Wang-13137/maldi-ms-pipeline}
+}
+```
+
+## 10. License
 
 MIT
