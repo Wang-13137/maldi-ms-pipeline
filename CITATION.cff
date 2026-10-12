@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+title: "maldi-ms-pipeline"
+message: >-
+  MALDI-TOF 代谢组学分析流水线：峰检测、跨样本对齐、特征过滤与机器学习诊断建模。
+type: software
+authors:
+  - family-names: "Wang"
+    given-names: "Zhetong"
+    alias: "王柘童"
+abstract: >-
+  从原始 profile spectrum 到可用诊断特征面板的完整流水线，对标 Bruker
+  flexAnalysis 的峰检测七步法，包含 SG 平滑、残差 MAD 噪声估计、五重质控、
+  同位素去除、100 ppm 跨样本对齐、阴性对照背景过滤与机器学习建模评估。
+  默认配置在 37 例临床尿液样本（感染 8 / 健康 29）上产生 47 个特征，
+  SVM（RBF）5 折分层交叉验证 AUC = 0.9167。
+license: MIT
+version: 0.1.0
+date-released: "2026-10-12"
+repository-code: "https://github.com/Wang-13137/maldi-ms-pipeline"
+url: "https://github.com/Wang-13137/maldi-ms-pipeline"
+keywords:
+  - MALDI-TOF
+  - mass spectrometry
+  - metabolomics
+  - peak detection
+  - biomarker
+  - machine learning
